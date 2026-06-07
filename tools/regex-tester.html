@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>正则表达式测试 - DevTools</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .match-highlight { background: #2d5a27; color: #bfb; border-radius: 2px; }
+    .match-group { background: #5a2d5a; color: #fbf; border-radius: 2px; }
+  </style>
+</head>
+<body>
+  <header><a href="/" class="logo">Dev<span>Tools</span></a><nav><a href="/">首页</a></nav></header>
+  <main class="container">
+    <a href="../index.html" class="back-link">← 返回工具列表</a>
+    <div class="tool-header"><h1>.* 正则表达式测试</h1><p>写正则，贴测试文本，实时查看匹配结果。</p></div>
+
+    <div class="btn-row">
+      <span style="font-size:0.85rem;color:var(--text-secondary);align-self:center;">修饰符：</span>
+      <label style="color:var(--text);cursor:pointer;display:flex;align-items:center;gap:4px;">
+        <input type="checkbox" id="flag-g" checked onchange="run()"> 全局(g)
+      </label>
+      <label style="color:var(--text);cursor:pointer;display:flex;align-items:center;gap:4px;">
+        <input type="checkbox" id="flag-i" onchange="run()"> 忽略大小写(i)
+      </label>
+      <label style="color:var(--text);cursor:pointer;display:flex;align-items:center;gap:4px;">
+        <input type="checkbox" id="flag-m" onchange="run()"> 多行(m)
+      </label>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+
+    <div class="panel" style="margin-bottom:16px;">
+      <label>正则表达式</label>
+      <input type="text" id="pattern" placeholder="例如：\d{4}-\d{2}-\d{2}" oninput="run()"
+        style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);padding:12px 16px;font-family:monospace;font-size:1rem;outline:none;">
+    </div>
+
+    <div class="workspace">
+      <div class="panel">
+        <label>测试文本</label>
+        <textarea id="input" placeholder="贴入要测试的文本..." oninput="run()">2025-01-15 是发布日期
+2025-03-20 是截止日期
+电话：138-0000-1234</textarea>
+      </div>
+      <div class="panel">
+        <label id="result-label">匹配结果</label>
+        <div id="output" class="output-preview" style="font-family:monospace;font-size:0.9rem;"></div>
+      </div>
+    </div>
+    <div id="error" style="color:var(--highlight);min-height:24px;"></div>
+  </main>
+  <script>
+    const patternEl = document.getElementById('pattern');
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    const error = document.getElementById('error');
+    const resultLabel = document.getElementById('result-label');
+
+    function run() {
+      const p = patternEl.value.trim();
+      if (!p) { output.innerHTML = ''; error.textContent = ''; return; }
+      let flags = '';
+      if (document.getElementById('flag-g').checked) flags += 'g';
+      if (document.getElementById('flag-i').checked) flags += 'i';
+      if (document.getElementById('flag-m').checked) flags += 'm';
+      try {
+        const re = new RegExp(p, flags);
+        const text = input.value;
+        const matches = [...text.matchAll(re)];
+        if (matches.length === 0) {
+          output.textContent = '无匹配';
+          error.textContent = '';
+          resultLabel.textContent = '匹配结果（0 项）';
+          return;
+        }
+        // Highlight matches in text
+        let html = '', lastIdx = 0;
+        for (const m of matches) {
+          html += escapeHtml(text.slice(lastIdx, m.index));
+          html += '<span class="match-highlight">' + escapeHtml(m[0]) + '</span>';
+          lastIdx = m.index + m[0].length;
+        }
+        html += escapeHtml(text.slice(lastIdx));
+        output.innerHTML = html;
+
+        // List groups
+        const re2 = new RegExp(p, flags);
+        const ms = [...text.matchAll(re2)];
+        let groupList = '\n\n捕获组：\n';
+        ms.forEach((m, i) => {
+          groupList += `  匹配${i+1}: "${m[0]}"`;
+          if (m.length > 1) {
+            groupList += ' | 组: ' + [...m].slice(1).map((g, j) => `${j+1}="${g}"`).join(', ');
+          }
+          groupList += '\n';
+        });
+        output.innerHTML += '<pre style="margin-top:8px;font-size:0.85rem;color:var(--text-secondary);">' + escapeHtml(groupList) + '</pre>';
+        resultLabel.textContent = `匹配结果（${ms.length} 项）`;
+        error.textContent = '';
+      } catch (e) {
+        output.textContent = '';
+        error.textContent = '❌ ' + e.message;
+        error.style.color = 'var(--highlight)';
+      }
+    }
+    function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function clearAll() { patternEl.value = ''; input.value = ''; output.innerHTML = ''; error.textContent = ''; resultLabel.textContent = '匹配结果'; }
+    run();
+  </script>
+</body>
+</html>

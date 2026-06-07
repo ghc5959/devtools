@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="免费在线开发工具集：JSON格式化、Base64编解码、二维码生成、文本对比、正则测试、时间戳转换、Markdown预览。纯前端运行，数据不上传。">
   <title>DevTools - 免费在线开发工具集</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -12,6 +13,7 @@
     <nav>
       <a href="/">首页</a>
       <a href="#all-tools">全部工具</a>
+      <a href="#about">关于</a>
       <a href="#sponsor">支持</a>
     </nav>
   </header>
@@ -19,71 +21,109 @@
   <main class="container">
     <section class="hero">
       <h1>🛠️ 免费在线开发工具</h1>
-      <p>纯前端工具，数据不上传服务器。格式化、编码、转换、生成，即开即用。</p>
+      <p>日常开发中反复用到的零碎操作——格式化、编码、生成、转换——全部放在一个地方。纯浏览器本地运行，无后端、无上传、无日志。</p>
     </section>
 
     <section id="all-tools">
+      <h2 style="margin-bottom:24px;font-size:1.2rem;color:var(--text-secondary);">全部工具</h2>
       <div class="tool-grid">
 
         <a href="tools/json-formatter.html" class="tool-card">
           <div class="icon">{ }</div>
           <h3>JSON 格式化</h3>
-          <p>JSON 美化、压缩、语法校验、树形浏览</p>
+          <p>美化、压缩、语法校验，支持嵌套对象和数组</p>
         </a>
 
         <a href="tools/base64.html" class="tool-card">
           <div class="icon">64</div>
           <h3>Base64 编解码</h3>
-          <p>文本与 Base64 互转，支持 Unicode</p>
+          <p>文本 ↔ Base64，完整支持中文和 Emoji</p>
         </a>
 
         <a href="tools/url-encode.html" class="tool-card">
           <div class="icon">%</div>
           <h3>URL 编码解码</h3>
-          <p>URL 参数的 encodeURI / decodeURI</p>
-        </a>
-
-        <a href="tools/markdown-preview.html" class="tool-card">
-          <div class="icon">MD</div>
-          <h3>Markdown 预览</h3>
-          <p>实时预览 Markdown，支持 GitHub 风格</p>
+          <p>encodeURIComponent / encodeURI 双模式</p>
         </a>
 
         <a href="tools/timestamp.html" class="tool-card">
           <div class="icon">⏱</div>
           <h3>时间戳转换</h3>
-          <p>Unix 时间戳与日期互相转换</p>
+          <p>Unix 秒/毫秒 ↔ 日期时间，实时显示当前时间戳</p>
         </a>
 
         <a href="tools/qrcode.html" class="tool-card">
           <div class="icon">▣</div>
           <h3>二维码生成</h3>
-          <p>输入文字生成二维码，可下载保存</p>
+          <p>文字/网址 → 二维码，支持下载 PNG</p>
+        </a>
+
+        <a href="tools/markdown-preview.html" class="tool-card">
+          <div class="icon">MD</div>
+          <h3>Markdown 预览</h3>
+          <p>左写右览，GitHub 风格渲染，实时刷新</p>
         </a>
 
         <a href="tools/color-convert.html" class="tool-card">
           <div class="icon">🎨</div>
           <h3>颜色转换</h3>
-          <p>HEX ↔ RGB ↔ HSL 实时互转</p>
+          <p>HEX ↔ RGB ↔ HSL，输入任意格式实时互转</p>
         </a>
 
         <a href="tools/text-diff.html" class="tool-card">
           <div class="icon">≠</div>
           <h3>文本对比</h3>
-          <p>两段文本逐行对比，标出差异</p>
+          <p>两段文本逐行 Diff，增删改一目了然</p>
+        </a>
+
+        <a href="tools/regex-tester.html" class="tool-card">
+          <div class="icon">.*</div>
+          <h3>正则表达式测试</h3>
+          <p>写正则、贴文本、看匹配结果，实时高亮</p>
+        </a>
+
+        <a href="tools/password-generator.html" class="tool-card">
+          <div class="icon">🔑</div>
+          <h3>密码生成器</h3>
+          <p>随机强密码，可调长度和字符类型组合</p>
+        </a>
+
+        <a href="tools/text-counter.html" class="tool-card">
+          <div class="icon">∑</div>
+          <h3>字数统计</h3>
+          <p>字符数、单词数、行数、中英文字数分开统计</p>
+        </a>
+
+        <a href="tools/case-converter.html" class="tool-card">
+          <div class="icon">Aa</div>
+          <h3>大小写转换</h3>
+          <p>大写、小写、首字母大写、驼峰、蛇形等一键转换</p>
         </a>
 
       </div>
     </section>
 
+    <section id="about" style="margin-top:56px;padding:24px;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);">
+      <h3>关于本站</h3>
+      <p style="color:var(--text-secondary);line-height:1.8;margin-top:8px;">
+        这是一个个人维护的免费在线工具集合。所有工具均在浏览器本地运行——你输入的数据<strong>不会上传到任何服务器</strong>，不会被记录或存储。
+      </p>
+      <p style="color:var(--text-secondary);line-height:1.8;margin-top:8px;">
+        如果你在日常工作中反复需要某个小功能——比如特定格式转换、文本处理、数据清洗——欢迎<strong>提需求</strong>。这个站点会持续更新，不断增加实用工具。
+      </p>
+      <p style="color:var(--text-secondary);line-height:1.8;margin-top:8px;">
+        站点托管在 <a href="https://github.com/ghc5959/devtools" style="color:var(--highlight);">GitHub</a>，纯静态页面，零依赖后端。如果你有好用的工具想贡献进来，欢迎提 Pull Request。
+      </p>
+    </section>
+
     <section class="sponsor-section" id="sponsor">
-      <p>☕ 这些工具完全免费。如果对你有帮助，可以请我喝杯咖啡</p>
-      <a href="https://www.buymeacoffee.com/" target="_blank" rel="noopener">Buy Me a Coffee →</a>
+      <p>☕ 如果这些工具帮到了你，请我喝杯咖啡。</p>
+      <p style="font-size:0.85rem;margin-top:4px;">赞助链接会在注册 Buy Me a Coffee 后更新。</p>
     </section>
   </main>
 
   <footer>
-    <p>所有工具均在浏览器本地运行，数据不会上传到任何服务器。</p>
+    <p>所有工具在浏览器本地运行，数据不上传 · <a href="https://github.com/ghc5959/devtools" style="color:var(--text-secondary);">GitHub</a></p>
   </footer>
 </body>
 </html>

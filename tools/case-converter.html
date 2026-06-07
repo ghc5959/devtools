@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>大小写转换 - DevTools</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header><a href="/" class="logo">Dev<span>Tools</span></a><nav><a href="/">首页</a></nav></header>
+  <main class="container">
+    <a href="../index.html" class="back-link">← 返回工具列表</a>
+    <div class="tool-header"><h1>Aa 大小写转换</h1><p>一键切换英文文本的大小写格式。</p></div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="convert('upper')">UPPERCASE</button>
+      <button class="btn btn-primary" onclick="convert('lower')">lowercase</button>
+      <button class="btn btn-secondary" onclick="convert('title')">Title Case</button>
+      <button class="btn btn-secondary" onclick="convert('sentence')">Sentence case</button>
+      <button class="btn btn-secondary" onclick="convert('camel')">camelCase</button>
+      <button class="btn btn-secondary" onclick="convert('pascal')">PascalCase</button>
+      <button class="btn btn-secondary" onclick="convert('snake')">snake_case</button>
+      <button class="btn btn-secondary" onclick="convert('kebab')">kebab-case</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+
+    <div class="workspace">
+      <div class="panel">
+        <label>输入</label>
+        <textarea id="input" placeholder="输入英文文本...">hello world this is a test</textarea>
+      </div>
+      <div class="panel">
+        <label id="output-label">输出</label>
+        <pre id="output"></pre>
+      </div>
+    </div>
+  </main>
+  <script>
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    const label = document.getElementById('output-label');
+
+    function convert(type) {
+      const text = input.value.trim();
+      if (!text) return;
+      const words = text.split(/\s+/);
+      let result;
+      switch (type) {
+        case 'upper': result = text.toUpperCase(); break;
+        case 'lower': result = text.toLowerCase(); break;
+        case 'title': result = words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' '); break;
+        case 'sentence': result = text.charAt(0).toUpperCase() + text.slice(1).toLowerCase(); break;
+        case 'camel':
+          result = words.map((w, i) => i === 0 ? w.toLowerCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+          break;
+        case 'pascal':
+          result = words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+          break;
+        case 'snake': result = words.map(w => w.toLowerCase()).join('_'); break;
+        case 'kebab': result = words.map(w => w.toLowerCase()).join('-'); break;
+      }
+      output.textContent = result;
+      label.textContent = `输出（${type}）`;
+    }
+    function clearAll() { input.value = ''; output.textContent = ''; label.textContent = '输出'; }
+  </script>
+</body>
+</html>

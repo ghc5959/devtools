@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>字数统计 - DevTools</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header><a href="/" class="logo">Dev<span>Tools</span></a><nav><a href="/">首页</a></nav></header>
+  <main class="container">
+    <a href="../index.html" class="back-link">← 返回工具列表</a>
+    <div class="tool-header"><h1>∑ 字数统计</h1><p>贴入文本，实时统计字符、单词、行数。中英文分别统计。</p></div>
+
+    <div class="panel" style="margin-bottom:16px;">
+      <label>输入文本</label>
+      <textarea id="input" placeholder="贴入文本..." oninput="count()" style="min-height:200px;">Hello World!
+这是一段测试文本。
+中文 English 混合一起统计。</textarea>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;" id="stats">
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;">
+        <div style="font-size:2rem;font-weight:700;color:var(--highlight);" id="chars">-</div>
+        <div style="color:var(--text-secondary);font-size:0.85rem;">总字符数</div>
+      </div>
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;">
+        <div style="font-size:2rem;font-weight:700;color:var(--highlight);" id="chars-ns">-</div>
+        <div style="color:var(--text-secondary);font-size:0.85rem;">不含空格</div>
+      </div>
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;">
+        <div style="font-size:2rem;font-weight:700;color:var(--highlight);" id="words">-</div>
+        <div style="color:var(--text-secondary);font-size:0.85rem;">英文单词</div>
+      </div>
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;">
+        <div style="font-size:2rem;font-weight:700;color:var(--highlight);" id="lines">-</div>
+        <div style="color:var(--text-secondary);font-size:0.85rem;">行数</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;">
+        <div style="font-size:1.5rem;font-weight:700;" id="cn-chars">-</div>
+        <div style="color:var(--text-secondary);font-size:0.85rem;">中文字符</div>
+      </div>
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;">
+        <div style="font-size:1.5rem;font-weight:700;" id="paragraphs">-</div>
+        <div style="color:var(--text-secondary);font-size:0.85rem;">段落数</div>
+      </div>
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;">
+        <div style="font-size:1.5rem;font-weight:700;" id="bytes">-</div>
+        <div style="color:var(--text-secondary);font-size:0.85rem;">字节数 (UTF-8)</div>
+      </div>
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;">
+        <div style="font-size:1.5rem;font-weight:700;" id="sentences">-</div>
+        <div style="color:var(--text-secondary);font-size:0.85rem;">句子数</div>
+      </div>
+    </div>
+  </main>
+  <script>
+    function count() {
+      const text = document.getElementById('input').value;
+      document.getElementById('chars').textContent = text.length;
+      document.getElementById('chars-ns').textContent = text.replace(/\s/g, '').length;
+      document.getElementById('words').textContent = (text.trim() ? text.trim().split(/\s+/).length : 0);
+      document.getElementById('lines').textContent = (text ? text.split('\n').length : 0);
+      document.getElementById('cn-chars').textContent = (text.match(/[一-鿿㐀-䶿]/g) || []).length;
+      document.getElementById('paragraphs').textContent = text.trim() ? text.trim().split(/\n\s*\n/).length : 0;
+      document.getElementById('bytes').textContent = new TextEncoder().encode(text).length;
+      document.getElementById('sentences').textContent = (text.match(/[.!?。！？]\s/g) || []).length + 1;
+    }
+    count();
+  </script>
+</body>
+</html>
