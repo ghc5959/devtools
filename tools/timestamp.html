@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>时间戳转换 - DevTools</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header>
+    <a href="/" class="logo">Dev<span>Tools</span></a>
+    <nav><a href="/">首页</a></nav>
+  </header>
+
+  <main class="container">
+    <a href="../index.html" class="back-link">← 返回工具列表</a>
+
+    <div class="tool-header">
+      <h1>⏱ 时间戳转换</h1>
+      <p>Unix 时间戳（秒/毫秒）与日期时间互相转换。</p>
+    </div>
+
+    <div class="panel" style="margin-bottom:20px;">
+      <label>当前时间</label>
+      <div style="font-size:1.2rem;font-family:monospace;margin-top:4px;">
+        秒级：<strong id="now-seconds">-</strong> ｜
+        毫秒级：<strong id="now-ms">-</strong>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="tsToDate()">时间戳 → 日期</button>
+      <button class="btn btn-primary" onclick="dateToTs()">日期 → 时间戳</button>
+      <button class="btn btn-secondary" onclick="useNow()">填入当前时间戳</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+
+    <div class="workspace">
+      <div class="panel">
+        <label>输入</label>
+        <textarea id="input" placeholder="输入 Unix 时间戳（秒或毫秒）..."></textarea>
+      </div>
+      <div class="panel">
+        <label id="output-label">输出</label>
+        <pre id="output"></pre>
+      </div>
+    </div>
+    <div id="error" style="color:var(--highlight);min-height:24px;"></div>
+  </main>
+
+  <script>
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    const error = document.getElementById('error');
+    const label = document.getElementById('output-label');
+
+    function updateNow() {
+      const ms = Date.now();
+      document.getElementById('now-seconds').textContent = Math.floor(ms / 1000);
+      document.getElementById('now-ms').textContent = ms;
+    }
+    updateNow();
+    setInterval(updateNow, 1000);
+
+    function tsToDate() {
+      let ts = parseInt(input.value.trim());
+      if (isNaN(ts)) { error.textContent = '❌ 请输入有效数字'; error.style.color = 'var(--highlight)'; return; }
+      if (ts > 1e15) ts = Math.floor(ts / 1000);
+      if (ts < 1e10) ts = ts * 1000;
+      const d = new Date(ts);
+      output.textContent =
+        `本地时间：${d.toLocaleString()}\n` +
+        `ISO 8601：${d.toISOString()}\n` +
+        `UTC 时间：${d.toUTCString()}\n` +
+        `年：${d.getFullYear()}  月：${d.getMonth() + 1}  日：${d.getDate()}\n` +
+        `时：${d.getHours()}  分：${d.getMinutes()}  秒：${d.getSeconds()}\n` +
+        `星期：${['日','一','二','三','四','五','六'][d.getDay()]}`;
+      label.textContent = '输出（日期）';
+      error.textContent = '';
+    }
+
+    function dateToTs() {
+      const s = input.value.trim();
+      const d = new Date(s);
+      if (isNaN(d.getTime())) {
+        error.textContent = '❌ 无法解析，请使用如 "2025-01-01 12:00" 或 "2025-01-01T12:00:00Z" 格式';
+        error.style.color = 'var(--highlight)';
+        return;
+      }
+      output.textContent =
+        `秒级时间戳：${Math.floor(d.getTime() / 1000)}\n` +
+        `毫秒级时间戳：${d.getTime()}`;
+      label.textContent = '输出（时间戳）';
+      error.textContent = '';
+    }
+
+    function useNow() {
+      input.value = Math.floor(Date.now() / 1000);
+      tsToDate();
+    }
+
+    function clearAll() {
+      input.value = '';
+      output.textContent = '';
+      error.textContent = '';
+      label.textContent = '输出';
+    }
+  </script>
+</body>
+</html>

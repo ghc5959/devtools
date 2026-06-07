@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown 预览 - DevTools</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <header>
+    <a href="/" class="logo">Dev<span>Tools</span></a>
+    <nav><a href="/">首页</a></nav>
+  </header>
+
+  <main class="container">
+    <a href="../index.html" class="back-link">← 返回工具列表</a>
+
+    <div class="tool-header">
+      <h1>MD Markdown 预览</h1>
+      <p>左侧写 Markdown，右侧实时预览（GitHub 风格）。</p>
+    </div>
+
+    <div class="workspace">
+      <div class="panel">
+        <label>Markdown 源码</label>
+        <textarea id="input" placeholder="# 标题&#10;&#10;**粗体** *斜体* &#10;&#10;- 列表项 1&#10;- 列表项 2&#10;&#10;`行内代码`&#10;&#10;```&#10;代码块&#10;```"># 欢迎使用 Markdown 预览
+
+**粗体** *斜体* ~~删除线~~
+
+## 列表
+- 项目一
+- 项目二
+  1. 子项 A
+  2. 子项 B
+
+## 代码
+行内 `code` 示例
+
+```
+function hello() {
+  console.log("Hello, world!");
+}
+```
+
+## 表格
+| 列A | 列B |
+|-----|-----|
+| 值1 | 值2 |
+
+## 引用
+> 这是一段引用文字。
+
+## 链接
+[GitHub](https://github.com)
+</textarea>
+      </div>
+      <div class="panel">
+        <label>预览</label>
+        <div class="output-preview" id="preview"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const input = document.getElementById('input');
+    const preview = document.getElementById('preview');
+
+    marked.setOptions({ breaks: true, gfm: true });
+
+    function update() {
+      preview.innerHTML = marked.parse(input.value);
+    }
+
+    input.addEventListener('input', update);
+    update();
+  </script>
+</body>
+</html>

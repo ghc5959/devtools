@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>二维码生成 - DevTools</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+</head>
+<body>
+  <header>
+    <a href="/" class="logo">Dev<span>Tools</span></a>
+    <nav><a href="/">首页</a></nav>
+  </header>
+
+  <main class="container">
+    <a href="../index.html" class="back-link">← 返回工具列表</a>
+
+    <div class="tool-header">
+      <h1>▣ 二维码生成</h1>
+      <p>输入文字或网址，生成二维码图片，可右键保存。</p>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="generate()">生成二维码</button>
+      <button class="btn btn-secondary" onclick="downloadQR()">下载 PNG</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+
+    <div class="panel" style="margin-bottom:20px;">
+      <label>输入内容</label>
+      <textarea id="input" placeholder="输入要编码的文字或网址..." style="min-height:80px;"></textarea>
+    </div>
+
+    <div class="qr-container" id="qr-container">
+      <p style="color:var(--text-secondary);">输入内容后点击「生成二维码」</p>
+    </div>
+  </main>
+
+  <script>
+    const input = document.getElementById('input');
+    const container = document.getElementById('qr-container');
+    let currentCanvas = null;
+
+    function generate() {
+      const text = input.value.trim();
+      if (!text) return;
+      container.innerHTML = '';
+      const canvas = document.createElement('canvas');
+      QRCode.toCanvas(canvas, text, { width: 256, margin: 2 }, (err) => {
+        if (err) {
+          container.innerHTML = '<p style="color:var(--highlight);">生成失败：' + err.message + '</p>';
+          return;
+        }
+        container.appendChild(canvas);
+        currentCanvas = canvas;
+      });
+    }
+
+    function downloadQR() {
+      if (!currentCanvas) { generate(); setTimeout(() => downloadQR(), 300); return; }
+      const link = document.createElement('a');
+      link.download = 'qrcode.png';
+      link.href = currentCanvas.toDataURL();
+      link.click();
+    }
+
+    function clearAll() {
+      input.value = '';
+      container.innerHTML = '<p style="color:var(--text-secondary);">输入内容后点击「生成二维码」</p>';
+      currentCanvas = null;
+    }
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); generate(); }
+    });
+  </script>
+</body>
+</html>

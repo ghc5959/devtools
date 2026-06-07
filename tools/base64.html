@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Base64 编解码 - DevTools</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header>
+    <a href="/" class="logo">Dev<span>Tools</span></a>
+    <nav>
+      <a href="/">首页</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <a href="../index.html" class="back-link">← 返回工具列表</a>
+
+    <div class="tool-header">
+      <h1>64 Base64 编解码</h1>
+      <p>文本 ↔ Base64，支持中文和 emoji。</p>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="encode()">编码 (→ Base64)</button>
+      <button class="btn btn-primary" onclick="decode()">解码 (→ 文本)</button>
+      <button class="btn btn-secondary" onclick="swap()">⇄ 交换</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+
+    <div class="workspace">
+      <div class="panel">
+        <label>输入</label>
+        <textarea id="input" placeholder="输入要编码/解码的文本..."></textarea>
+      </div>
+      <div class="panel">
+        <label id="output-label">输出</label>
+        <pre id="output"></pre>
+      </div>
+    </div>
+    <div id="error" style="color:var(--highlight);min-height:24px;"></div>
+  </main>
+
+  <script>
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    const error = document.getElementById('error');
+    const label = document.getElementById('output-label');
+
+    function encode() {
+      try {
+        const bytes = new TextEncoder().encode(input.value);
+        const binString = Array.from(bytes, b => String.fromCodePoint(b)).join('');
+        output.textContent = btoa(binString);
+        label.textContent = '输出（Base64）';
+        error.textContent = '✅ 编码成功';
+        error.style.color = '#4caf50';
+      } catch (e) {
+        error.textContent = '❌ ' + e.message;
+        error.style.color = 'var(--highlight)';
+      }
+    }
+
+    function decode() {
+      try {
+        const binString = atob(input.value.trim());
+        const bytes = Uint8Array.from(binString, c => c.codePointAt(0));
+        output.textContent = new TextDecoder().decode(bytes);
+        label.textContent = '输出（文本）';
+        error.textContent = '✅ 解码成功';
+        error.style.color = '#4caf50';
+      } catch (e) {
+        error.textContent = '❌ 解码失败，请检查输入是否为有效 Base64';
+        error.style.color = 'var(--highlight)';
+      }
+    }
+
+    function swap() {
+      const temp = input.value;
+      input.value = output.textContent;
+      output.textContent = temp;
+      error.textContent = '';
+    }
+
+    function clearAll() {
+      input.value = '';
+      output.textContent = '';
+      error.textContent = '';
+      label.textContent = '输出';
+    }
+  </script>
+</body>
+</html>

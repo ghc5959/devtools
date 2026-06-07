@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL 编码解码 - DevTools</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header>
+    <a href="/" class="logo">Dev<span>Tools</span></a>
+    <nav>
+      <a href="/">首页</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <a href="../index.html" class="back-link">← 返回工具列表</a>
+
+    <div class="tool-header">
+      <h1>% URL 编码解码</h1>
+      <p>URL 参数编码与解码，支持 encodeURIComponent / decodeURIComponent。</p>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="doEncode()">编码 (encodeURIComponent)</button>
+      <button class="btn btn-primary" onclick="doDecode()">解码</button>
+      <button class="btn btn-secondary" onclick="doEncodeURI()">编码 (encodeURI)</button>
+      <button class="btn btn-secondary" onclick="swap()">⇄ 交换</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+
+    <div class="workspace">
+      <div class="panel">
+        <label>输入</label>
+        <textarea id="input" placeholder="输入要编码/解码的 URL 或文本..."></textarea>
+      </div>
+      <div class="panel">
+        <label id="output-label">输出</label>
+        <pre id="output"></pre>
+      </div>
+    </div>
+    <div id="error" style="color:var(--highlight);min-height:24px;"></div>
+  </main>
+
+  <script>
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    const error = document.getElementById('error');
+    const label = document.getElementById('output-label');
+
+    function doEncode() {
+      output.textContent = encodeURIComponent(input.value);
+      label.textContent = '输出（encodeURIComponent）';
+      error.textContent = '';
+    }
+
+    function doEncodeURI() {
+      output.textContent = encodeURI(input.value);
+      label.textContent = '输出（encodeURI — 保留 :/?#[]@）';
+      error.textContent = '';
+    }
+
+    function doDecode() {
+      try {
+        output.textContent = decodeURIComponent(input.value.trim());
+        label.textContent = '输出（解码）';
+        error.textContent = '✅ 解码成功';
+        error.style.color = '#4caf50';
+      } catch (e) {
+        error.textContent = '❌ ' + e.message;
+        error.style.color = 'var(--highlight)';
+      }
+    }
+
+    function swap() {
+      const temp = input.value;
+      input.value = output.textContent;
+      output.textContent = temp;
+      error.textContent = '';
+    }
+
+    function clearAll() {
+      input.value = '';
+      output.textContent = '';
+      error.textContent = '';
+      label.textContent = '输出';
+    }
+  </script>
+</body>
+</html>

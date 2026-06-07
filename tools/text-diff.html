@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文本对比 - DevTools</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .diff-line { padding: 2px 8px; font-family: monospace; font-size: 0.9rem; white-space: pre-wrap; word-break: break-all; }
+    .diff-add { background: #1b3a1b; color: #8f8; }
+    .diff-del { background: #3a1b1b; color: #f88; }
+    .diff-eq { color: var(--text-secondary); }
+    .diff-header { color: var(--highlight); font-weight: 600; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/" class="logo">Dev<span>Tools</span></a>
+    <nav><a href="/">首页</a></nav>
+  </header>
+
+  <main class="container">
+    <a href="../index.html" class="back-link">← 返回工具列表</a>
+
+    <div class="tool-header">
+      <h1>≠ 文本对比</h1>
+      <p>粘贴两段文本，逐行标出差异。</p>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="diff()">对比</button>
+      <button class="btn btn-secondary" onclick="swap()">⇄ 交换</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+
+    <div class="workspace">
+      <div class="panel">
+        <label>原文</label>
+        <textarea id="input-a" placeholder="粘贴原文..."></textarea>
+      </div>
+      <div class="panel">
+        <label>对比文本</label>
+        <textarea id="input-b" placeholder="粘贴要对比的文本..."></textarea>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:12px;">
+      <label id="result-label">对比结果</label>
+      <pre id="output" style="min-height:200px;font-size:0.85rem;"></pre>
+    </div>
+    <div id="stats" style="color:var(--text-secondary);margin-top:8px;"></div>
+  </main>
+
+  <script>
+    const aEl = document.getElementById('input-a');
+    const bEl = document.getElementById('input-b');
+    const out = document.getElementById('output');
+    const stats = document.getElementById('stats');
+
+    function diff() {
+      const a = aEl.value.split('\n');
+      const b = bEl.value.split('\n');
+      const result = [];
+      let adds = 0, dels = 0, eqs = 0;
+
+      // LCS-based diff
+      const m = a.length, n = b.length;
+      const dp = Array.from({length: m+1}, () => new Array(n+1).fill(0));
+      for (let i = 1; i <= m; i++)
+        for (let j = 1; j <= n; j++)
+          dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] + 1 : Math.max(dp[i-1][j], dp[i][j-1]);
+
+      const lines = [];
+      let i = m, j = n;
+      while (i > 0 || j > 0) {
+        if (i > 0 && j > 0 && a[i-1] === b[j-1]) {
+          lines.unshift({type: 'eq', text: '  ' + a[i-1]}); eqs++; i--; j--;
+        } else if (j > 0 && (i === 0 || dp[i][j-1] >= dp[i-1][j])) {
+          lines.unshift({type: 'add', text: '+ ' + b[j-1]}); adds++; j--;
+        } else {
+          lines.unshift({type: 'del', text: '- ' + a[i-1]}); dels++; i--;
+        }
+      }
+
+      out.innerHTML = lines.map(l =>
+        `<div class="diff-line diff-${l.type === 'add' ? 'add' : l.type === 'del' ? 'del' : 'eq'}">${escapeHtml(l.text)}</div>`
+      ).join('');
+      stats.textContent = `+${adds} 行新增  −${dels} 行删除  ${eqs} 行相同`;
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function swap() {
+      const t = aEl.value;
+      aEl.value = bEl.value;
+      bEl.value = t;
+    }
+
+    function clearAll() {
+      aEl.value = '';
+      bEl.value = '';
+      out.innerHTML = '';
+      stats.textContent = '';
+    }
+  </script>
+</body>
+</html>

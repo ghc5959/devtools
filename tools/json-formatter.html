@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON 格式化 - DevTools</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header>
+    <a href="/" class="logo">Dev<span>Tools</span></a>
+    <nav>
+      <a href="/">首页</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <a href="../index.html" class="back-link">← 返回工具列表</a>
+
+    <div class="tool-header">
+      <h1>{ } JSON 格式化</h1>
+      <p>粘贴 JSON 字符串，自动美化/压缩/校验语法。</p>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="format()">美化</button>
+      <button class="btn btn-secondary" onclick="compress()">压缩</button>
+      <button class="btn btn-secondary" onclick="validateJson()">校验</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+
+    <div class="workspace">
+      <div class="panel">
+        <label>输入</label>
+        <textarea id="input" placeholder='粘贴 JSON 字符串...&#10;例如：{"name":"张三","age":25}'></textarea>
+      </div>
+      <div class="panel">
+        <label id="output-label">输出</label>
+        <pre id="output" style="min-height:300px;"></pre>
+      </div>
+    </div>
+
+    <div id="error" style="color:var(--highlight);min-height:24px;"></div>
+  </main>
+
+  <script>
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    const error = document.getElementById('error');
+    const outputLabel = document.getElementById('output-label');
+
+    function format() {
+      try {
+        const obj = JSON.parse(input.value);
+        output.textContent = JSON.stringify(obj, null, 2);
+        outputLabel.textContent = '输出（美化）';
+        error.textContent = '✅ 有效的 JSON';
+        error.style.color = '#4caf50';
+      } catch (e) {
+        output.textContent = '';
+        error.textContent = '❌ ' + e.message;
+        error.style.color = 'var(--highlight)';
+      }
+    }
+
+    function compress() {
+      try {
+        const obj = JSON.parse(input.value);
+        output.textContent = JSON.stringify(obj);
+        outputLabel.textContent = '输出（压缩）';
+        error.textContent = '✅ 有效的 JSON';
+        error.style.color = '#4caf50';
+      } catch (e) {
+        output.textContent = '';
+        error.textContent = '❌ ' + e.message;
+        error.style.color = 'var(--highlight)';
+      }
+    }
+
+    function validateJson() {
+      try {
+        const obj = JSON.parse(input.value);
+        const type = Array.isArray(obj) ? '数组' : typeof obj;
+        error.textContent = `✅ 有效的 JSON（类型：${type}，键数：${Object.keys(obj).length}）`;
+        error.style.color = '#4caf50';
+      } catch (e) {
+        error.textContent = '❌ ' + e.message;
+        error.style.color = 'var(--highlight)';
+      }
+    }
+
+    function clearAll() {
+      input.value = '';
+      output.textContent = '';
+      error.textContent = '';
+      outputLabel.textContent = '输出';
+    }
+  </script>
+</body>
+</html>

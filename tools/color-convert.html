@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>颜色转换 - DevTools</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header>
+    <a href="/" class="logo">Dev<span>Tools</span></a>
+    <nav><a href="/">首页</a></nav>
+  </header>
+
+  <main class="container">
+    <a href="../index.html" class="back-link">← 返回工具列表</a>
+
+    <div class="tool-header">
+      <h1>🎨 颜色转换</h1>
+      <p>HEX ↔ RGB ↔ HSL 实时互转，输入任意格式自动转换。</p>
+    </div>
+
+    <div class="panel" style="margin-bottom: 20px;">
+      <label>输入颜色值</label>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <input type="text" id="input" placeholder="#e94560 或 rgb(233,69,96) 或 hsl(351,78%,59%)"
+          style="flex:1;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);padding:12px 16px;font-family:monospace;font-size:1rem;outline:none;">
+        <div class="color-swatch" id="swatch" style="background:#e94560;"></div>
+      </div>
+      <div style="margin-top:4px;font-size:0.8rem;color:var(--text-secondary);">支持：#e94560 | rgb(233,69,96) | hsl(351,78%,59%) | 逗号/空格分隔均可</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;" id="results">
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
+        <label>HEX</label>
+        <div id="hex-val" style="font-family:monospace;font-size:1.2rem;margin-top:4px;">#e94560</div>
+      </div>
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
+        <label>RGB</label>
+        <div id="rgb-val" style="font-family:monospace;font-size:1.2rem;margin-top:4px;">rgb(233, 69, 96)</div>
+      </div>
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
+        <label>HSL</label>
+        <div id="hsl-val" style="font-family:monospace;font-size:1.2rem;margin-top:4px;">hsl(351, 78%, 59%)</div>
+      </div>
+    </div>
+    <div id="error" style="color:var(--highlight);min-height:24px;margin-top:8px;"></div>
+  </main>
+
+  <script>
+    const inp = document.getElementById('input');
+    const swatch = document.getElementById('swatch');
+    const hexEl = document.getElementById('hex-val');
+    const rgbEl = document.getElementById('rgb-val');
+    const hslEl = document.getElementById('hsl-val');
+    const errEl = document.getElementById('error');
+
+    function parseColor(str) {
+      str = str.trim();
+      // HEX
+      let m = str.match(/^#?([a-f\d]{3,8})$/i);
+      if (m) {
+        let h = m[1];
+        if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+        if (h.length === 6) h += 'ff';
+        if (h.length !== 8) return null;
+        return {
+          r: parseInt(h.slice(0,2), 16),
+          g: parseInt(h.slice(2,4), 16),
+          b: parseInt(h.slice(4,6), 16)
+        };
+      }
+      // rgb
+      m = str.match(/rgba?\s*\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)/i);
+      if (m) return { r: +m[1], g: +m[2], b: +m[3] };
+      // hsl
+      m = str.match(/hsla?\s*\(\s*(\d+)[,\s]+(\d+)%[,\s]+(\d+)%/i);
+      if (m) return hslToRgb(+m[1], +m[2], +m[3]);
+      return null;
+    }
+
+    function hslToRgb(h, s, l) {
+      s /= 100; l /= 100;
+      const a = s * Math.min(l, 1 - l);
+      const f = n => {
+        const k = (n + h / 30) % 12;
+        const c = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+        return Math.round(c * 255);
+      };
+      return { r: f(0), g: f(8), b: f(4) };
+    }
+
+    function rgbToHsl(r, g, b) {
+      r /= 255; g /= 255; b /= 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h = 0, s, l = (max + min) / 2;
+      if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+          case g: h = ((b - r) / d + 2) / 6; break;
+          case b: h = ((r - g) / d + 4) / 6; break;
+        }
+      } else { s = 0; }
+      return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+    }
+
+    function update() {
+      const c = parseColor(inp.value);
+      if (!c) { errEl.textContent = inp.value ? '❌ 无法解析颜色值' : ''; errEl.style.color = 'var(--highlight)'; return; }
+      if (c.r < 0 || c.r > 255 || c.g < 0 || c.g > 255 || c.b < 0 || c.b > 255) {
+        errEl.textContent = '❌ RGB 值超出 0-255 范围'; errEl.style.color = 'var(--highlight)'; return;
+      }
+      errEl.textContent = '';
+      const hex = '#' + [c.r, c.g, c.b].map(v => v.toString(16).padStart(2, '0')).join('');
+      const hsl = rgbToHsl(c.r, c.g, c.b);
+      swatch.style.background = `rgb(${c.r},${c.g},${c.b})`;
+      hexEl.textContent = hex;
+      rgbEl.textContent = `rgb(${c.r}, ${c.g}, ${c.b})`;
+      hslEl.textContent = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+    }
+
+    inp.addEventListener('input', update);
+  </script>
+</body>
+</html>
